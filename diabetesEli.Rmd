@@ -1,0 +1,48 @@
+---
+title: "diabetesEli"
+author: "Elizabeth Cattaneo"
+date: "8/20/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Objetivo:**
+Desarrollar un modelo de clasificación para diabetes.
+
+**Datos:**
+dataset descargado de la plataforma  [kaggle](https://www.kaggle.com/competitions/diabetes-classification/overview)
+
+**Variables de la base:**
+
+1. Number of times pregnant
+2. Plasma glucose concentration a 2 hours in an oral glucose tolerance test
+3. Diastolic blood pressure (mm Hg)
+4. Triceps skin fold thickness (mm)
+5. 2-Hour serum insulin (mu U/ml)
+6. Body mass index (weight in kg/(height in m)^2)
+7. Diabetes pedigree function
+8. Age (years)
+9. Class variable (0 or 1)
+
+* Class variable es la variable a predecir y toma los valores:
+  - 0 si la persona no es diabética
+  - 1 si la persona es diabética
+
+**Tipos de modelos para clasificar variables categóricas:**
+
++ Regresión logística
++ Decision tree -> probar library(caret) y library(rpart)
++ Random Forest -> library(randomForest)
++ Red neuronal -> library(neuralnet)
+
+**Pasos para el desarrollo del modelo:**
+
+1) Cargar los datos 
+2) Explorarlos
+3) Separarlos en entrenamiento (TR) y testeo (TS)
+4) Crear el modelo con los datos de TR
+5) Calcular las predicciones para los 2 sets de datos (TR y TS)
+6) Validar

@@ -41,8 +41,26 @@ dataset descargado de la plataforma  [kaggle](https://www.kaggle.com/competition
 **Pasos para el desarrollo del modelo:**
 
 1) Cargar los datos 
-2) Explorarlos
+2) Explorarlos (EDA: Exploraory Data Analysis)
 3) Separarlos en entrenamiento (TR) y testeo (TS)
 4) Crear el modelo con los datos de TR
 5) Calcular las predicciones para los 2 sets de datos (TR y TS)
 6) Validar
+
+```{r}
+library(tidyverse)
+```
+
+
+###**Paso 1: Cargar los datos**
+
+```{r carga de datos}
+diabetes<-read.csv("diabetes.csv")
+```
+
+###**Paso 2: EDA**
+
+
+
+####**Modelo 1: Regresión Logística**
+Método de regresión que permite estimar la probabilidad de una variable cualitativa binaria en función de variables cuantitativas y/o categóricas. Es decir, permite calcular la probabilidad de que la variable dependiente pertenezca a cada una de las dos categorías en función de los valores que adquieran las variables independientes.

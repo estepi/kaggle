@@ -33,8 +33,8 @@ dataset descargado de la plataforma  [kaggle](https://www.kaggle.com/competition
 
 **Tipos de modelos para clasificar variables categóricas:**
 
-+ Regresión logística
-+ Decision tree -> probar library(caret) y library(rpart)
++ Regresión logística (simple o múltiple)
++ Decision tree -> library(rpart) para crear el árbol y library(rpart.plot) para visualizarlo
 + Random Forest -> library(randomForest)
 + Red neuronal -> library(neuralnet)
 
@@ -47,20 +47,49 @@ dataset descargado de la plataforma  [kaggle](https://www.kaggle.com/competition
 5) Calcular las predicciones para los 2 sets de datos (TR y TS)
 6) Validar
 
+**Bibliografía**
+
+[Acá](https://www.cienciadedatos.net/documentos/27_regresion_logistica_simple_y_multiple#Regresi%C3%B3n_log%C3%ADstica_m%C3%BAltiple) hay info sobre regresión logística simple y múltiple.
+
 ```{r}
+# cargo librerias
 library(tidyverse)
+library(corrplot)
 ```
 
-
-###**Paso 1: Cargar los datos**
+### **Paso 1: Cargar los datos**
 
 ```{r carga de datos}
 diabetes<-read.csv("diabetes.csv")
 ```
 
-###**Paso 2: EDA**
+### **Paso 2: EDA**
 
+```{r}
+# general
+str(diabetes)
+```
 
+#### **Modelo 1: Regresión Logística**
 
-####**Modelo 1: Regresión Logística**
 Método de regresión que permite estimar la probabilidad de una variable cualitativa binaria en función de variables cuantitativas y/o categóricas. Es decir, permite calcular la probabilidad de que la variable dependiente pertenezca a cada una de las dos categorías en función de los valores que adquieran las variables independientes.
+
+* Para hacerla se utiliza stat::glm() (generalized linear model).
+* La variable de salida debe ser factor.
+* Para ver como se relaciona la variable de salida con las variables de entrada se pueden visualizar los coeficientes de correlación utilizando [corrplot](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html)
+
+```{r fig.width=10}
+# visualizacion de los coef de correlacion
+corrplot(cor(diabetes), method = "number")
+```
+
+```{r}
+# chequeo variable de salida
+class(diabetes$Outcome)
+```
+
+```{r}
+# la transformo en factor y chequeo
+diabetes$Outcome <- as.factor(diabetes$Outcome)
+class(diabetes$Outcome)
+```

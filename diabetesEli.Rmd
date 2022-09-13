@@ -49,7 +49,7 @@ dataset descargado de la plataforma  [kaggle](https://www.kaggle.com/competition
 
 **Bibliografía**
 
-[Acá](https://www.cienciadedatos.net/documentos/27_regresion_logistica_simple_y_multiple#Regresi%C3%B3n_log%C3%ADstica_m%C3%BAltiple) hay info sobre regresión logística simple y múltiple.
+[Acá](https://www.cienciadedatos.net/machine-learning-r.html) hay info sobre Machine Learning en R. De acá lei lo de Regresión Logística.
 
 ```{r}
 # cargo librerias

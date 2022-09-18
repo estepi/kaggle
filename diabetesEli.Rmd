@@ -68,6 +68,7 @@ diabetes<-read.csv("diabetes.csv")
 ```{r}
 # general
 str(diabetes)
+summary(diabetes)
 ```
 
 #### **Modelo 1: Regresión Logística**

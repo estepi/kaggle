@@ -38,11 +38,72 @@ library(GGally)
 ## Load data:
 
 This dataset is originally from the National Institute of Diabetes and Digestive and Kidney Diseases. The objective of the dataset is to diagnostically predict whether or not a patient has diabetes, based on certain diagnostic measurements included in the dataset. Several constraints were placed on the selection of these instances from a larger database. In particular, all patients here are females at least 21 years old of Pima Indian heritage.
-
-```{r pressure, echo=FALSE}
+  
+```{r load, echo=FALSE, message=FALSE}
 diabetes<-read.csv("diabetes.csv")
 colnames(diabetes)
 head(diabetes)
 ```
 
-  
+
+## Prepare the DataSet
+
+```{r prepare, echo=FALSE, message=FALSE}
+diabetes$Outcome<-as.factor(diabetes$Outcome)
+diabetes[,1:8][diabetes[,1:8]==0]<- NA
+missmap(diabetes)
+colnames(diabetes)
+```
+
+## Visualizando la variable de numero de embarazos 
+
+```{r numEmb, echo=FALSE, message=FALSE}
+ggplot(diabetes, aes(x=Pregnancies, 
+                     fill=Outcome, color=Outcome)) +
+  geom_histogram(binwidth = 1) + 
+  labs(title="Distribución de embarazos") + 
+  theme_bw() 
+```
+
+
+## Visualizando la variable de Glucosa 
+
+```{r glucose, echo=FALSE, message=FALSE}
+ggplot(diabetes, aes(Glucose, colour = Outcome)) + 
+  geom_freqpoly(binwidth = 1) + 
+  labs(title="Distribución Glucosa") + 
+  theme_bw() 
+```
+
+## Visualizando la variable de Insulina 
+
+```{r insuline, echo=FALSE, message=FALSE}
+ggplot(diabetes, aes(x=Insulin, fill=Outcome,
+                     color=Outcome)) +
+  geom_histogram(binwidth = 1) + 
+  labs(title="Distribución de la insulina")+ theme_bw() 
+```
+
+## IVisualizando la variable de presion sanguinea
+
+```{r bloodPressure, echo=FALSE, message=FALSE}
+ggplot(diabetes, aes(x=BloodPressure , col=Outcome))+ geom_freqpoly(binwidth = 1) + labs(title="Distribución de presión sanguínea") + theme_bw()
+
+```
+
+
+## Visualizando la variable de grosor de piel 
+
+```{r skin, echo=FALSE, message=FALSE}
+ggplot(diabetes, aes(x=SkinThickness, col=Outcome))+ 
+  geom_freqpoly(binwidth = 1) + 
+  labs(title="Distribución de grosor de piel") + theme_bw() 
+```
+
+
+## Analyze codependency
+
+```{r dependency, echo=FALSE, message=FALSE}
+ggpairs(diabetes)
+```
+

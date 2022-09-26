@@ -1,0 +1,48 @@
+---
+title: "WinterGenomics course: ML with R, part II"
+author: "Estefania Mancini"
+date: "2022-09-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Readme
+
+To view in a browser: https://estepi.github.io/kaggle/
+
+```{r loadLibraries, echo=FALSE, message=FALSE}
+#install.packages("Amelia")
+#install.packages("corrplot")
+#install.packages("caret")
+#install.packages("e1071")
+#install.packages("tree")
+#install.packages("randomForest")
+#install.packages("mice")
+#install.packages("GGally")
+##############################################
+#----Load libraries-----
+library(corrplot)
+library(caret)
+library("e1071")
+library(tree)
+library(Amelia)
+library(Amelia)
+library(randomForest)
+library(mice)
+library(GGally)
+```
+
+## Load data:
+
+This dataset is originally from the National Institute of Diabetes and Digestive and Kidney Diseases. The objective of the dataset is to diagnostically predict whether or not a patient has diabetes, based on certain diagnostic measurements included in the dataset. Several constraints were placed on the selection of these instances from a larger database. In particular, all patients here are females at least 21 years old of Pima Indian heritage.
+
+```{r pressure, echo=FALSE}
+diabetes<-read.csv("diabetes.csv")
+colnames(diabetes)
+head(diabetes)
+```
+
+  

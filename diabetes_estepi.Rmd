@@ -255,5 +255,5 @@ varImpPlot(rf_diabetes, type = 2, main = "Variable Importance",col = 'black')
 plot(rf_diabetes, main = "Error vs no. of trees grown")
 ```
 
-# Analysis following Winter Genomic Course (ML part II)
+
 

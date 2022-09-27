@@ -107,3 +107,44 @@ ggplot(diabetes, aes(x=SkinThickness, col=Outcome))+
 ggpairs(diabetes)
 ```
 
+
+## Construyendo el modelo
+
+```{r seed}
+set.seed(123)
+```
+
+Recomendacion del 0.7 al 0.85
+
+```{r particion}
+particion_diab<-createDataPartition(y=diabetes$Outcome,
+                                    p=0.75, list = FALSE)
+
+set_entrenamiento<-diabetes[particion_diab,]; dim(set_entrenamiento)
+set_validacion<-diabetes[-particion_diab,]; dim(set_validacion)
+```
+
+## Chequear dimensiones de los datos partidos
+
+```{r Checkpartition}
+prop.table(table(diabetes$Outcome)) * 100 
+prop.table(table(set_entrenamiento$Outcome)) * 100 
+prop.table(table(set_validacion$Outcome)) * 100 
+```
+
+
+## Eliminando la variable string outcome 
+
+```{r setx}
+x =  set_entrenamiento[,-9] 
+```
+
+# Seleccionando la variable de clasificacion 
+
+```{r sety}
+y = set_entrenamiento$Outcome 
+```
+
+## Construyendo el modelo 
+
+

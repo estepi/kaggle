@@ -88,13 +88,7 @@ set_validacion<-diabetes[-particion_diab,]; dim(set_validacion)
 prop.table(table(diabetes$Outcome)) * 100 
 prop.table(table(set_entrenamiento$Outcome)) * 100 
 prop.table(table(set_validacion$Outcome)) * 100 
-#Eliminando la variable string outcome x = 
-set_entrenamiento[,-9] 
 #Seleccionando la variable de clasificacion 
-#Construyendo el modelo l<
-# cv cross validation 10 vecees
-# se obtiene u consenso dentro del modelo
-# se accde a un rsumen
 
 #---- PASO 7 mATRIZ DE CONFUSION ----
 #nb naive bayes
@@ -106,6 +100,8 @@ y = set_entrenamiento$Outcome
 
 model <- train(x,y,'nb',
                trControl=trainControl(method='cv',number=10)) 
+# No anda, muchas NAs¿
+
 
 confusionMatrix(model)
 
@@ -118,6 +114,7 @@ varImpPlot(model,
 
 #calculo precision, sensibilidad
 #################################
+pima<-diabetes
 n <- nrow(pima)
 train <- sample(n, trunc(0.70*n))
 pima_training <- pima[train, ]
@@ -143,6 +140,7 @@ class(pima_testing$Outcome)
 table(Predicted = glm_pred, Actual = pima_testing$Diabetes)
 table(Predicted = glm_pred, Actual = pima_testing$Outcome)
 pima$Outcome <- as.factor(pima$Outcome)
+
 library(caret)
 set.seed(1000)
 intrain <- createDataPartition(y = pima$Outcome, p = 0.7, list = FALSE)

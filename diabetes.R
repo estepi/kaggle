@@ -8,12 +8,14 @@ install.packages("tree")
 library(tree)
 install.packages("randomForest")
 library(randomForest)
+library(caret)
 
 pima<-read.csv("diabetes.csv")
 colnames(pima)
 head(pima)
 corrplot(cor(pima[, -9]), type = "lower", method = "number")
 
+dev.off()
 # Preparing the DataSet
 set.seed(123)
 n <- nrow(pima)
@@ -40,19 +42,22 @@ class(glm_pred)
 class(pima_testing$Outcome)
 table(Predicted = glm_pred, Actual = pima_testing$Diabetes)
 table(Predicted = glm_pred, Actual = pima_testing$Outcome)
-pima$Outcome <- as.factor(pima$Outcome)
-library(caret)
+
 set.seed(1000)
+#try anotehr model
+class(pima_testing$Outcome)
+pima$Outcome <- as.factor(pima$Outcome)
 intrain <- createDataPartition(y = pima$Outcome, p = 0.7, list = FALSE)
 train <- pima[intrain, ]
 test <- pima[-intrain, ]
 
-set.seed(123)
 rf_pima <- randomForest(Outcome ~., data = pima_training, mtry = 8, ntree=50, importance = TRUE)
 
 # Testing the Model
 rf_probs <- predict(rf_pima, newdata = pima_testing)
 rf_pred <- ifelse(rf_probs > 0.5, 1, 0)
+
+
 importance(rf_pima)
 par(mfrow = c(1, 2))
 varImpPlot(rf_pima, type = 2, main = "Variable Importance",col = 'black')

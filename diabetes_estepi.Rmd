@@ -1,0 +1,139 @@
+---
+title: "Analysis of Diabetes dataset"
+author: "Estefania Mancini"
+date: "2022-09-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Description
+
+* This dataset is originally from the National Institute of Diabetes and Digestive and Kidney Diseases. 
+
+* The objective of the dataset is to diagnostically predict whether or not a patient has diabetes, based on certain diagnostic measurements included in the dataset. 
+
+* Several constraints were placed on the selection of these instances from a larger database. In particular, all patients here are females at least 21 years old of diabetes Indian heritage.
+
+* I analyze this data following kaggle proposed strategy combined with winter genomics ML course
+
+## Load required libraries
+
+```{r libraries, message=FALSE}
+library(corrplot)
+library(caret)
+library("e1071")
+library(tree)
+library(randomForest)
+library(Amelia)
+library(mice)
+library(GGally)
+```
+
+## Load Data
+
+```{r pressure, echo=FALSE, message=FALSE}
+diabetes<-read.csv("diabetes.csv")
+colnames(diabetes)
+head(diabetes)
+dim(diabetes)
+```
+
+## Check NAs:
+
+```{r checkNAS, echo=FALSE, message=FALSE}
+missmap(diabetes)
+```
+
+## Explore some variables 
+
+```{r corrplot, echo=FALSE, message=FALSE}
+corrplot(cor(diabetes[, -9]), type = "lower", method = "number")
+```
+
+
+## Preparing the DataSet
+
+We divide the dataset in train (0.7) and  test (0.3)
+
+```{r divide, echo=FALSE, message=FALSE}
+set.seed(123)
+n <- nrow(diabetes)
+train <- sample(n, trunc(0.70*n))
+diabetes$Outcome <- as.factor(diabetes$Outcome)
+diabetes_training <- diabetes[train, ]
+diabetes_testing <- diabetes[-train, ]
+```
+
+## Train the model (glm)
+
+```{r train, echo=FALSE, message=FALSE}
+glm_fm1 <- glm(Outcome ~., data = diabetes_training, family = binomial)
+glm_fm2 <- update(glm_fm1, ~. - Triceps_Skin - Serum_Insulin - Age )
+summary(glm_fm2)
+```
+
+## Plot some variables
+
+```{r plotGlm, echo=FALSE, message=FALSE}
+par(mfrow = c(2,2))
+plot(glm_fm2)
+```
+
+## Test the model:
+
+```{r testGlm, echo=FALSE, message=FALSE}
+glm_probs <- predict(glm_fm2, newdata = diabetes_testing, type = "response")
+glm_pred <- ifelse(glm_probs > 0.5, 1, 0)
+```
+
+# Confusion Matrix for logistic regression:
+
+```{r confusion, echo=FALSE, message=FALSE}
+table(Predicted = glm_pred, Actual = diabetes_testing$Outcome)
+```
+
+# Try model: random forest. Partition:
+
+```{r split2, echo=FALSE, message=FALSE}
+intrain <- createDataPartition(y = diabetes$Outcome, p = 0.7, list = FALSE)
+
+train <- diabetes[intrain, ]
+test <- diabetes[-intrain, ]
+```
+
+## Try model
+
+```{r rfmodel, echo=FALSE, message=FALSE}
+rf_diabetes <- randomForest(Outcome ~., data = diabetes_training, mtry = 8, ntree=50, importance = TRUE)
+```
+
+## Testing the Model
+
+```{r rfmodeltest, echo=FALSE, message=FALSE}
+rf_probs <- predict(rf_diabetes, newdata = diabetes_testing)
+rf_pred <- ifelse(rf_probs > 0.5, 1, 0)
+```
+
+## Check importance:
+
+```{r ranking, echo=FALSE, message=FALSE}
+importance(rf_diabetes)
+```
+
+## Visualizing variables:
+
+```{r visual, echo=FALSE, message=FALSE}
+varImpPlot(rf_diabetes, type = 2, main = "Variable Importance",col = 'black')
+```
+
+
+## Eror vs no of trees grown
+
+```{r errors, echo=FALSE, message=FALSE}
+plot(rf_diabetes, main = "Error vs no. of trees grown")
+```
+
+# Analysis following Winter Genomic Course (ML part II)

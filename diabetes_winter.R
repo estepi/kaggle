@@ -13,7 +13,6 @@ library(caret)
 library("e1071")
 library(tree)
 library(Amelia)
-library(Amelia)
 library(randomForest)
 library(mice)
 library(GGally)
@@ -25,7 +24,6 @@ head(diabetes)
 
 #----Prepare the DataSet----
 diabetes$Outcome<-as.factor(diabetes$Outcome)
-
 #----Cleaning ----
 diabetes[,1:8][diabetes[,1:8]==0]<- NA
 # descripcion de NAs en el dataset
@@ -34,15 +32,21 @@ missmap(diabetes)
 colnames(diabetes)
 #Transferir datos perdidos predichos
 #############
-#mice_complete <- mice(diabetes[,c(  "BloodPressure",
-#                              "Pregnancies", 
-#                                  "BMI", "SkinThickness")],
-#  method="rf")
+mice_complete <- mice(diabetes[,c(  "Glucose",
+                                    "BMI", 
+                                    "BloodPressure",
+                                    "Pregnancies", 
+                                    "SkinThickness", 
+                                    "Insulin")],
+  method="rf")
 
-#diabetes$SkinThickness <- mice_complete$SkinThickness 
-#diabetes$Insulin <-    mice_complete$Insulin 
-#diabetes$BMI <- mice_complete$BMI 
-#diabetes$Glucose <- mice_complete$Glucose 
+diabetes$Glucose<-  complete(mice_complete)$Glucose
+diabetes$BMI <- complete(mice_complete)$BMI 
+diabetes$BloodPressure<-  complete(mice_complete)$BloodPressure
+diabetes$Pregnancies <- complete(mice_complete)$Pregnancies
+diabetes$SkinThickness <- complete(mice_complete)$SkinThickness 
+diabetes$Insulin <- complete(mice_complete)$Insulin
+missmap(diabetes)
 
 #Visualizando la variable de numero de embarazos 
 
@@ -104,56 +108,7 @@ model <- train(x,y,'nb',
 
 
 confusionMatrix(model)
-
-varImpPlot(model, 
+#otro plot
+varImpPlot(model$results, 
            type = 2,
            main = "Variable Importance",col = 'black')
-#################################
-#----variables-----#
-
-
-#calculo precision, sensibilidad
-#################################
-pima<-diabetes
-n <- nrow(pima)
-train <- sample(n, trunc(0.70*n))
-pima_training <- pima[train, ]
-pima_testing <- pima[-train, ]
-
-
-# Training The Model
-glm_fm1 <- glm(Outcome ~., data = pima_training, family = binomial)
-#############################
-glm_fm2 <- update(glm_fm1, ~. - Triceps_Skin - Serum_Insulin - Age )
-summary(glm_fm2)
-
-par(mfrow = c(2,2))
-plot(glm_fm2)
-
-# Testing the Model
-glm_probs <- predict(glm_fm2, newdata = pima_testing, type = "response")
-glm_pred <- ifelse(glm_probs > 0.5, 1, 0)
-#print("Confusion Matrix for logistic regression");
-table(Predicted = glm_pred, Actual = pima_testing$Outcome)
-class(glm_pred)
-class(pima_testing$Outcome)
-table(Predicted = glm_pred, Actual = pima_testing$Diabetes)
-table(Predicted = glm_pred, Actual = pima_testing$Outcome)
-pima$Outcome <- as.factor(pima$Outcome)
-
-library(caret)
-set.seed(1000)
-intrain <- createDataPartition(y = pima$Outcome, p = 0.7, list = FALSE)
-train <- pima[intrain, ]
-test <- pima[-intrain, ]
-
-set.seed(123)
-rf_pima <- randomForest(Outcome ~., data = pima_training, mtry = 8, ntree=50, importance = TRUE)
-
-# Testing the Model
-rf_probs <- predict(rf_pima, newdata = pima_testing)
-rf_pred <- ifelse(rf_probs > 0.5, 1, 0)
-importance(rf_pima)
-par(mfrow = c(1, 2))
-varImpPlot(rf_pima, type = 2, main = "Variable Importance",col = 'black')
-plot(rf_pima, main = "Error vs no. of trees grown")

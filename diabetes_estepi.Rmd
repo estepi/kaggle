@@ -44,17 +44,136 @@ dim(diabetes)
 ## Check NAs:
 
 ```{r checkNAS, echo=FALSE, message=FALSE}
+diabetesClean<-diabetes
+diabetesClean[,1:8][diabetes[,1:8]==0]<- NA
+diabetesClean$Outcome <- as.factor(diabetesClean$Outcome)
+```
+
+## Visualize NAs and impute:
+
+```{r missmap, echo=FALSE, message=FALSE}
+missmap(diabetesClean)
+```
+
+```{r mice, echo=FALSE, message=FALSE}
+mice_complete <- mice(diabetesClean[,c(  "Glucose",
+                                    "BMI", 
+                                    "BloodPressure",
+                                    "Pregnancies", 
+                                    "SkinThickness", 
+                                    "Insulin")],
+  method="rf")
+
+diabetesClean$Glucose<-  complete(mice_complete)$Glucose
+diabetesClean$BMI <- complete(mice_complete)$BMI 
+diabetesClean$BloodPressure<-  complete(mice_complete)$BloodPressure
+diabetesClean$Pregnancies <- complete(mice_complete)$Pregnancies
+diabetesClean$SkinThickness <- complete(mice_complete)$SkinThickness 
+diabetesClean$Insulin <- complete(mice_complete)$Insulin
+```
+
+## Re-check NAs:
+
+```{r recheckNAs, echo=FALSE, message=FALSE}
 missmap(diabetes)
 ```
 
 ## Explore some variables 
 
+###  Pregnancies
+
+```{r numEmb, echo=FALSE, message=FALSE}
+ggplot(diabetesClean, aes(x=Pregnancies, 
+                     fill=Outcome, color=Outcome)) +
+  geom_histogram(binwidth = 1) + 
+  labs(title="Distribución de embarazos") + 
+  theme_bw() 
+```
+
+
+##  Glucose levels
+
+```{r glucose, echo=FALSE, message=FALSE}
+ggplot(diabetesClean, aes(Glucose, colour = Outcome)) + 
+  geom_freqpoly(binwidth = 1) + 
+  labs(title="Distribución Glucosa") + 
+  theme_bw() 
+```
+
+## Insuline
+
+```{r insuline, echo=FALSE, message=FALSE}
+ggplot(diabetesClean, aes(x=Insulin, fill=Outcome,
+                     color=Outcome)) +
+  geom_histogram(binwidth = 1) + 
+  labs(title="Distribución de la insulina")+ theme_bw() 
+```
+
+## Blood pressure
+
+```{r bloodPressure, echo=FALSE, message=FALSE}
+ggplot(diabetesClean, aes(x=BloodPressure , col=Outcome))+ geom_freqpoly(binwidth = 1) + labs(title="Distribución de presión sanguínea") + theme_bw()
+
+```
+
+
+## Skin thickness
+
+```{r skin, echo=FALSE, message=FALSE}
+ggplot(diabetesClean, aes(x=SkinThickness, col=Outcome))+ 
+  geom_freqpoly(binwidth = 1) + 
+  labs(title="Distribución de grosor de piel") + theme_bw() 
+```
+
+
+## Analyze codependency
+
+```{r dependency, echo=FALSE, message=FALSE}
+ggpairs(diabetesClean[, -9])
+```
+
+
 ```{r corrplot, echo=FALSE, message=FALSE}
 corrplot(cor(diabetes[, -9]), type = "lower", method = "number")
 ```
 
+## Preparing the DataSet 
+training (0.75) / test (0.3) (Winter genomic ML II)
 
-## Preparing the DataSet
+```{r partition, echo=FALSE, message=FALSE}
+particion_diab<-createDataPartition(y=diabetesClean$Outcome,
+                                    p=0.75, list = FALSE)
+
+set_entrenamiento<-diabetesClean[particion_diab,]; dim(set_entrenamiento)
+set_validacion<-diabetesClean[-particion_diab,]; dim(set_validacion)
+
+prop.table(table(diabetesClean$Outcome)) * 100 
+prop.table(table(set_entrenamiento$Outcome)) * 100 
+prop.table(table(set_validacion$Outcome)) * 100 
+
+head(set_entrenamiento)
+dim(set_entrenamiento)
+colnames(set_entrenamiento)
+
+```
+
+```{r select, echo=FALSE, message=FALSE}
+x = set_entrenamiento[,-9] 
+y = set_entrenamiento$Outcome 
+```
+
+
+```{r modelW, echo=FALSE, message=FALSE, warning=FALSE}
+model <- train(x,y,'nb',
+              trControl=trainControl(method='cv',number=10)) 
+```
+
+```{r confusionW, echo=FALSE, message=FALSE}
+confusionMatrix(model)
+```
+
+
+## Preparing the DataSet (Model GLM and RF)
 
 We divide the dataset in train (0.7) and  test (0.3)
 
@@ -137,3 +256,4 @@ plot(rf_diabetes, main = "Error vs no. of trees grown")
 ```
 
 # Analysis following Winter Genomic Course (ML part II)
+
